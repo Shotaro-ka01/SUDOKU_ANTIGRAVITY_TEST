@@ -29,8 +29,6 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     display: flex;
-    justify-content: center;
-    align-items: center;
     padding: 20px;
 }
 
@@ -48,6 +46,7 @@ body {
     gap: 30px;
     max-width: 600px;
     width: 100%;
+    margin: auto;
 }
 
 header {
@@ -64,6 +63,13 @@ h1 {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.status-bar {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    font-weight: 600;
 }
 
 .controls {
@@ -129,6 +135,7 @@ h1 {
     width: 100%;
     max-width: 450px;
     aspect-ratio: 1;
+    flex-shrink: 0;
 }
 
 .cell {
@@ -142,6 +149,28 @@ h1 {
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s;
     user-select: none;
+    position: relative;
+}
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.note-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.6rem;
+    font-weight: 400;
+    color: var(--text-secondary);
 }
 
 /* 3x3 blocks thick borders */
@@ -261,6 +290,21 @@ h1 {
     transform: translateY(1px);
 }
 
+.num-btn.completed {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.action-btn.active {
+    background: var(--accent);
+    color: #000;
+}
+
+.action-btn.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
 .action-btn {
     grid-column: span 4;
     font-size: 1rem;
@@ -351,4 +395,71 @@ h1 {
     font-size: 1.25rem;
     margin-bottom: 30px;
     color: var(--text-given);
+}
+
+.app-container.layout-2 {
+    max-width: 700px;
+}
+
+.main-horizontal {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.vertical-numpad {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(12, 1fr);
+    gap: 8px;
+    width: 80px;
+    height: 100%;
+}
+
+.vertical-numpad .num-btn,
+.vertical-numpad .action-btn,
+.vertical-numpad #hint-btn {
+    grid-column: span 1 !important;
+    padding: 0;
+    font-size: 1.15rem;
+    height: 100%;
+    min-height: 40px;
+}
+
+.vertical-numpad .action-btn {
+    font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+    .main-horizontal {
+        flex-direction: column;
+    }
+
+    .vertical-numpad {
+        width: 100%;
+        max-width: 480px;
+        grid-template-columns: repeat(9, 1fr);
+        grid-template-rows: auto;
+    }
+
+    .vertical-numpad .num-btn {
+        min-height: auto;
+        padding: 8px 0;
+        grid-column: span 1 !important;
+    }
+
+    .vertical-numpad .action-btn {
+        grid-column: span 3 !important;
+    }
+
+    .vertical-numpad #hint-btn {
+        grid-column: span 3 !important;
+    }
+
+    .vertical-numpad #notes-btn {
+        grid-column: span 3 !important;
+    }
 }

@@ -7,6 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const diffBtns = document.querySelectorAll('.diff-btn');
     const winOverlay = document.getElementById('win-overlay');
     const playAgainBtn = document.getElementById('play-again-btn');
+    const notesBtn = document.getElementById('notes-btn');
+    const mistakeCountEl = document.getElementById('mistake-count');
+    const gameOverOverlay = document.getElementById('game-over-overlay');
+    const restartBtn = document.getElementById('restart-btn');
 
     let selectedCell = null;
     let cellElements = [];
@@ -15,15 +19,39 @@ document.addEventListener('DOMContentLoaded', () => {
     let grid = Array(9).fill().map(() => Array(9).fill(0));
     let solution = Array(9).fill().map(() => Array(9).fill(0));
     let puzzleGrid = Array(9).fill().map(() => Array(9).fill(0));
+    let notes = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
+
+    let mistakes = 0;
+    let hints = 3;
+    let notesMode = false;
 
     // Initialize the Game
     function initGame() {
+        mistakes = 0;
+        hints = 3;
+        notesMode = false;
+        updateStatusUI();
+        notesBtn.innerText = 'Notes: Off';
+        notesBtn.classList.remove('active');
+        notes = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
+
         const { fullBoard, puzzle } = generatePuzzle(currentDifficulty);
         solution = fullBoard;
         puzzleGrid = puzzle.map(row => [...row]);
         grid = puzzle.map(row => [...row]);
 
         renderBoard();
+        checkCompletedNumbers();
+    }
+
+    function updateStatusUI() {
+        mistakeCountEl.innerText = `${mistakes}/3`;
+        hintBtn.innerText = `Hint (${hints})`;
+        if (hints <= 0) {
+            hintBtn.classList.add('disabled');
+        } else {
+            hintBtn.classList.remove('disabled');
+        }
     }
 
     // Generator & Logic
@@ -140,6 +168,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (val !== 0) {
                     cell.innerText = val;
                     cell.classList.add('given');
+                } else {
+                    // Create notes grid container for empty cells
+                    const notesGrid = document.createElement('div');
+                    notesGrid.classList.add('notes-grid');
+                    for (let i = 1; i <= 9; i++) {
+                        const noteItem = document.createElement('div');
+                        noteItem.classList.add('note-item');
+                        noteItem.dataset.noteVal = i;
+                        notesGrid.appendChild(noteItem);
+                    }
+                    cell.appendChild(notesGrid);
                 }
 
                 cell.addEventListener('mousedown', () => selectCell(cell, row, col));
@@ -175,10 +214,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            if (value && cell.innerText === value && cell !== selectedCell) {
+            if (value && getCellValue(cell) === value && cell !== selectedCell) {
                 cell.classList.add('same-val');
             }
         });
+    }
+
+    function getCellValue(cell) {
+        if (cell.classList.contains('given') || cell.classList.contains('input')) {
+            // Traverse child nodes to find text (ignoring notes container)
+            let txt = '';
+            cell.childNodes.forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    txt += node.textContent;
+                }
+            });
+            return txt.trim();
+        }
+        return '';
+    }
+
+    function setCellValue(cell, val) {
+        // Remove existing text nodes
+        Array.from(cell.childNodes).forEach(node => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                node.remove();
+            }
+        });
+
+        if (val !== '') {
+            cell.appendChild(document.createTextNode(val));
+            // Hide notes
+            const notesGrid = cell.querySelector('.notes-grid');
+            if (notesGrid) notesGrid.style.display = 'none';
+        } else {
+            // Show notes
+            const notesGrid = cell.querySelector('.notes-grid');
+            if (notesGrid) notesGrid.style.display = 'grid';
+        }
     }
 
     // Input Handling
@@ -223,24 +296,103 @@ document.addEventListener('DOMContentLoaded', () => {
         const r = parseInt(selectedCell.dataset.row);
         const c = parseInt(selectedCell.dataset.col);
 
-        selectedCell.innerText = val;
+        if (notesMode) {
+            // If cell already has a main number, don't allow putting notes
+            if (grid[r][c] !== 0) return;
 
-        if (!isValid(grid, r, c, val)) {
-            selectedCell.classList.add('error');
-        } else {
-            selectedCell.classList.remove('error');
+            const cellNotes = notes[r][c];
+            if (cellNotes.has(val)) {
+                cellNotes.delete(val);
+            } else {
+                cellNotes.add(val);
+            }
+            renderNotes(selectedCell, r, c);
+            return;
         }
 
+        setCellValue(selectedCell, val);
         grid[r][c] = val;
+
         selectedCell.classList.add('input');
+
+        if (val !== solution[r][c]) {
+            selectedCell.classList.add('error');
+            mistakes++;
+            updateStatusUI();
+            if (mistakes >= 3) {
+                setTimeout(() => gameOverOverlay.classList.add('show'), 500);
+            }
+        } else {
+            selectedCell.classList.remove('error');
+            // Remove this number from notes in same row/col/block
+            removeNotesForValidInput(r, c, val);
+        }
 
         selectedCell.classList.remove('animate-pop');
         void selectedCell.offsetWidth;
         selectedCell.classList.add('animate-pop');
 
         updateHighlights(r, c, val.toString());
-
+        checkCompletedNumbers();
         checkWinCondition();
+    }
+
+    function renderNotes(cell, r, c) {
+        const cellNotes = notes[r][c];
+        const noteItems = cell.querySelectorAll('.note-item');
+        noteItems.forEach(item => {
+            const val = parseInt(item.dataset.noteVal);
+            if (cellNotes.has(val)) {
+                item.innerText = val;
+            } else {
+                item.innerText = '';
+            }
+        });
+    }
+
+    function removeNotesForValidInput(r, c, val) {
+        for (let i = 0; i < 9; i++) {
+            notes[r][i].delete(val);
+            notes[i][c].delete(val);
+
+            const cellR = cellElements.find(el => el.dataset.row == r && el.dataset.col == i && !el.classList.contains('given') && grid[r][i] === 0);
+            if (cellR) renderNotes(cellR, r, i);
+
+            const cellC = cellElements.find(el => el.dataset.row == i && el.dataset.col == c && !el.classList.contains('given') && grid[i][c] === 0);
+            if (cellC) renderNotes(cellC, i, c);
+        }
+
+        const startRow = Math.floor(r / 3) * 3;
+        const startCol = Math.floor(c / 3) * 3;
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                const br = startRow + i;
+                const bc = startCol + j;
+                notes[br][bc].delete(val);
+                const cellB = cellElements.find(el => el.dataset.row == br && el.dataset.col == bc && !el.classList.contains('given') && grid[br][bc] === 0);
+                if (cellB) renderNotes(cellB, br, bc);
+            }
+        }
+    }
+
+    function checkCompletedNumbers() {
+        let counts = Array(10).fill(0);
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                if (grid[r][c] !== 0 && grid[r][c] === solution[r][c]) {
+                    counts[grid[r][c]]++;
+                }
+            }
+        }
+
+        numBtns.forEach(btn => {
+            const val = parseInt(btn.dataset.val);
+            if (counts[val] === 9) {
+                btn.classList.add('completed');
+            } else {
+                btn.classList.remove('completed');
+            }
+        });
     }
 
     eraseBtn.addEventListener('click', eraseNumber);
@@ -251,18 +403,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const c = parseInt(selectedCell.dataset.col);
 
         grid[r][c] = 0;
-        selectedCell.innerText = '';
+        setCellValue(selectedCell, '');
         selectedCell.classList.remove('input', 'error');
         updateHighlights(r, c, '');
+        checkCompletedNumbers();
     }
 
+    notesBtn.addEventListener('click', () => {
+        notesMode = !notesMode;
+        if (notesMode) {
+            notesBtn.classList.add('active');
+            notesBtn.innerText = 'Notes: On';
+        } else {
+            notesBtn.classList.remove('active');
+            notesBtn.innerText = 'Notes: Off';
+        }
+    });
+
     hintBtn.addEventListener('click', () => {
-        if (!selectedCell || selectedCell.classList.contains('given')) return;
+        if (hints <= 0) return;
+        if (!selectedCell || selectedCell.classList.contains('given') || grid[parseInt(selectedCell.dataset.row)][parseInt(selectedCell.dataset.col)] !== 0) return;
+
         const r = parseInt(selectedCell.dataset.row);
         const c = parseInt(selectedCell.dataset.col);
 
         const correctVal = solution[r][c];
+        notesMode = false; // temporarily force disable notes to input the hint
+        notesBtn.classList.remove('active');
+        notesBtn.innerText = 'Notes: Off';
+
         handleInput(correctVal);
+        hints--;
+        updateStatusUI();
     });
 
     function showWin() {
@@ -308,6 +480,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     playAgainBtn.addEventListener('click', () => {
         winOverlay.classList.remove('show');
+        initGame();
+    });
+
+    restartBtn.addEventListener('click', () => {
+        gameOverOverlay.classList.remove('show');
         initGame();
     });
 
