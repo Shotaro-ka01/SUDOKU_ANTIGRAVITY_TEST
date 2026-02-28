@@ -120,6 +120,7 @@ h1 {
 .game-board {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
     grid-gap: 1px;
     background: var(--board-border);
     border: 3px solid var(--board-border);
@@ -226,10 +227,10 @@ h1 {
 
 .numpad {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 8px;
     width: 100%;
-    max-width: 450px;
+    max-width: 480px;
 }
 
 .num-btn,
@@ -237,9 +238,9 @@ h1 {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     color: var(--text-primary);
-    border-radius: 12px;
-    padding: 15px 0;
-    font-size: 1.25rem;
+    border-radius: 10px;
+    padding: 12px 0;
+    font-size: 1.15rem;
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
@@ -261,31 +262,42 @@ h1 {
 }
 
 .action-btn {
-    grid-column: span 3;
+    grid-column: span 4;
     font-size: 1rem;
+}
+
+#hint-btn {
+    grid-column: span 5;
 }
 
 @media (max-width: 480px) {
     .app-container {
-        padding: 20px;
+        padding: 15px;
         border-radius: 16px;
     }
 
     .cell {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
     }
 
     .numpad {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 6px;
+        grid-template-columns: repeat(9, 1fr);
+        gap: 4px;
+    }
+
+    .num-btn,
+    .action-btn {
+        padding: 8px 0;
+        font-size: 1rem;
+        border-radius: 8px;
     }
 
     .action-btn {
-        grid-column: span 2;
+        grid-column: span 4;
     }
 
-    .action-btn:last-child {
-        grid-column: span 3;
+    #hint-btn {
+        grid-column: span 5;
     }
 }
 
