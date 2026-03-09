@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const numBtns = document.querySelectorAll('.num-btn');
     const eraseBtn = document.getElementById('erase-btn');
     const hintBtn = document.getElementById('hint-btn');
+    const notesBtn = document.getElementById('notes-btn');
     const newGameBtn = document.getElementById('new-game-btn');
     const diffBtns = document.querySelectorAll('.diff-btn');
     const winOverlay = document.getElementById('win-overlay');
@@ -507,14 +508,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function showWin() {
         stopTimer();
         finalTimeDisplay.innerText = `Time: ${formatTime(secondsElapsed)}`;
-        
+
         const isNewBest = saveBestTime(currentDifficulty, secondsElapsed);
         if (isNewBest) {
             newBestTimeMsg.style.display = 'block';
         } else {
             newBestTimeMsg.style.display = 'none';
         }
-        
+
         winOverlay.classList.add('show');
     }
 
@@ -577,16 +578,16 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', (e) => {
             diffBtns.forEach(b => b.classList.remove('active'));
             startDiffBtns.forEach(b => b.classList.remove('active')); // Sync
-            
+
             const diff = e.target.dataset.diff;
             // set active on the header and the start overlay
             document.querySelectorAll(`[data-diff="${diff}"]`).forEach(b => b.classList.add('active'));
-            
+
             currentDifficulty = diff;
             // Optionally, we don't restart game right away when clicked in header 
             // but just to stay consistent with original logic:
             if (!startOverlay.classList.contains('show')) {
-                 initGame();
+                initGame();
             }
         });
     });
