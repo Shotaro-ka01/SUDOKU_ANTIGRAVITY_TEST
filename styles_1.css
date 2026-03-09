@@ -9,9 +9,9 @@
     --cell-hover: rgba(255, 255, 255, 0.1);
     --cell-selected: rgba(79, 209, 197, 0.3);
     --cell-highlight: rgba(79, 209, 197, 0.1);
-    --cell-error: rgba(255, 99, 132, 0.4);
+    --cell-error: rgba(220, 38, 38, 0.6);
     --cell-same-val: rgba(79, 209, 197, 0.2);
-    --text-error: #ffb3c6;
+    --text-error: #ff4d4d;
     --text-given: #e2e8f0;
     --text-input: #4fd1c5;
     --board-border: rgba(255, 255, 255, 0.2);
@@ -142,6 +142,8 @@ h1 {
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s;
     user-select: none;
+    min-width: 0;
+    min-height: 0;
 }
 
 /* 3x3 blocks thick borders */
@@ -225,12 +227,22 @@ h1 {
     }
 }
 
-.numpad {
-    display: grid;
-    grid-template-columns: repeat(9, 1fr);
-    gap: 8px;
+.controls-area {
     width: 100%;
-    max-width: 480px;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.numpad {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding-bottom: 5px;
 }
 
 .num-btn,
@@ -238,13 +250,18 @@ h1 {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     color: var(--text-primary);
-    border-radius: 10px;
-    padding: 12px 0;
-    font-size: 1.15rem;
-    font-weight: 600;
+    border-radius: 12px;
+    padding: 18px 0;
+    font-size: 1.5rem;
+    font-weight: 700;
     font-family: inherit;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+.num-btn {
+    flex: 0 0 45px;
+    padding: 12px 0;
 }
 
 @media (hover: hover) {
@@ -261,13 +278,16 @@ h1 {
     transform: translateY(1px);
 }
 
-.action-btn {
-    grid-column: span 4;
-    font-size: 1rem;
+.actions-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
 }
 
-#hint-btn {
-    grid-column: span 5;
+.action-btn {
+    flex: 1;
+    font-size: 1.25rem;
+    padding: 15px 0;
 }
 
 @media (max-width: 480px) {
@@ -280,24 +300,15 @@ h1 {
         font-size: 1.1rem;
     }
 
-    .numpad {
-        grid-template-columns: repeat(9, 1fr);
-        gap: 4px;
-    }
-
-    .num-btn,
-    .action-btn {
-        padding: 8px 0;
-        font-size: 1rem;
-        border-radius: 8px;
+    .num-btn {
+        flex: 0 0 45px;
+        font-size: 1.2rem;
+        padding: 10px 0;
     }
 
     .action-btn {
-        grid-column: span 4;
-    }
-
-    #hint-btn {
-        grid-column: span 5;
+        font-size: 1.1rem;
+        padding: 10px 0;
     }
 }
 
@@ -351,4 +362,22 @@ h1 {
     font-size: 1.25rem;
     margin-bottom: 30px;
     color: var(--text-given);
+}
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.note-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.5rem;
+    color: var(--text-secondary);
+    line-height: 1;
 }

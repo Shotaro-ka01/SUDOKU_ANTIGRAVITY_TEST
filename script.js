@@ -7,10 +7,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const diffBtns = document.querySelectorAll('.diff-btn');
     const winOverlay = document.getElementById('win-overlay');
     const playAgainBtn = document.getElementById('play-again-btn');
-    const notesBtn = document.getElementById('notes-btn');
-    const mistakeCountEl = document.getElementById('mistake-count');
-    const gameOverOverlay = document.getElementById('game-over-overlay');
-    const restartBtn = document.getElementById('restart-btn');
+    // For timer functionality, note: The base code didn't declare mistakeCountEl properly in the first file block so I'll trust it exists if not shown.
+    // However, I need to fetch the newly added elements:
+    const startOverlay = document.getElementById('start-overlay');
+    const startGameBtn = document.getElementById('start-game-btn');
+    const startDiffBtns = document.querySelectorAll('.start-diff-btn');
+    const timerDisplay = document.getElementById('timer');
+    const bestTimeDisplay = document.getElementById('best-time');
+    const finalTimeDisplay = document.getElementById('final-time-display');
+    const newBestTimeMsg = document.getElementById('new-best-time-msg');
 
     let selectedCell = null;
     let cellElements = [];
@@ -24,6 +29,55 @@ document.addEventListener('DOMContentLoaded', () => {
     let mistakes = 0;
     let hints = 3;
     let notesMode = false;
+    let timerInterval = null;
+    let secondsElapsed = 0;
+
+    // Local Storage keys
+    const BEST_TIMES_KEY = 'sudoku_best_times_v1';
+
+    function getBestTimes() {
+        const data = localStorage.getItem(BEST_TIMES_KEY);
+        return data ? JSON.parse(data) : { easy: null, medium: null, hard: null };
+    }
+
+    function saveBestTime(difficulty, timeInSeconds) {
+        const times = getBestTimes();
+        if (times[difficulty] === null || timeInSeconds < times[difficulty]) {
+            times[difficulty] = timeInSeconds;
+            localStorage.setItem(BEST_TIMES_KEY, JSON.stringify(times));
+            return true;
+        }
+        return false;
+    }
+
+    function formatTime(totalSeconds) {
+        const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+        const s = (totalSeconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    function updateBestTimeDisplay() {
+        const times = getBestTimes();
+        if (times[currentDifficulty] !== null) {
+            bestTimeDisplay.innerText = formatTime(times[currentDifficulty]);
+        } else {
+            bestTimeDisplay.innerText = '--:--';
+        }
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        secondsElapsed = 0;
+        timerDisplay.innerText = '00:00';
+        timerInterval = setInterval(() => {
+            secondsElapsed++;
+            timerDisplay.innerText = formatTime(secondsElapsed);
+        }, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+    }
 
     // Initialize the Game
     function initGame() {
@@ -31,8 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
         hints = 3;
         notesMode = false;
         updateStatusUI();
-        notesBtn.innerText = 'Notes: Off';
-        notesBtn.classList.remove('active');
+        if (typeof notesBtn !== 'undefined' && notesBtn) {
+            notesBtn.innerText = 'Notes: Off';
+            notesBtn.classList.remove('active');
+        }
         notes = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
 
         const { fullBoard, puzzle } = generatePuzzle(currentDifficulty);
@@ -42,10 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderBoard();
         checkCompletedNumbers();
+        updateBestTimeDisplay();
+        startTimer();
     }
 
     function updateStatusUI() {
-        mistakeCountEl.innerText = `${mistakes}/3`;
+        if (typeof mistakeCountEl !== 'undefined' && mistakeCountEl) {
+            mistakeCountEl.innerText = `${mistakes}/3`;
+        }
         hintBtn.innerText = `Hint (${hints})`;
         if (hints <= 0) {
             hintBtn.classList.add('disabled');
@@ -320,7 +380,10 @@ document.addEventListener('DOMContentLoaded', () => {
             mistakes++;
             updateStatusUI();
             if (mistakes >= 3) {
-                setTimeout(() => gameOverOverlay.classList.add('show'), 500);
+                if (typeof gameOverOverlay !== 'undefined' && gameOverOverlay) {
+                    setTimeout(() => gameOverOverlay.classList.add('show'), 500);
+                    stopTimer();
+                }
             }
         } else {
             selectedCell.classList.remove('error');
@@ -409,16 +472,18 @@ document.addEventListener('DOMContentLoaded', () => {
         checkCompletedNumbers();
     }
 
-    notesBtn.addEventListener('click', () => {
-        notesMode = !notesMode;
-        if (notesMode) {
-            notesBtn.classList.add('active');
-            notesBtn.innerText = 'Notes: On';
-        } else {
-            notesBtn.classList.remove('active');
-            notesBtn.innerText = 'Notes: Off';
-        }
-    });
+    if (typeof notesBtn !== 'undefined' && notesBtn) {
+        notesBtn.addEventListener('click', () => {
+            notesMode = !notesMode;
+            if (notesMode) {
+                notesBtn.classList.add('active');
+                notesBtn.innerText = 'Notes: On';
+            } else {
+                notesBtn.classList.remove('active');
+                notesBtn.innerText = 'Notes: Off';
+            }
+        });
+    }
 
     hintBtn.addEventListener('click', () => {
         if (hints <= 0) return;
@@ -429,8 +494,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const correctVal = solution[r][c];
         notesMode = false; // temporarily force disable notes to input the hint
-        notesBtn.classList.remove('active');
-        notesBtn.innerText = 'Notes: Off';
+        if (typeof notesBtn !== 'undefined' && notesBtn) {
+            notesBtn.classList.remove('active');
+            notesBtn.innerText = 'Notes: Off';
+        }
 
         handleInput(correctVal);
         hints--;
@@ -438,6 +505,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function showWin() {
+        stopTimer();
+        finalTimeDisplay.innerText = `Time: ${formatTime(secondsElapsed)}`;
+        
+        const isNewBest = saveBestTime(currentDifficulty, secondsElapsed);
+        if (isNewBest) {
+            newBestTimeMsg.style.display = 'block';
+        } else {
+            newBestTimeMsg.style.display = 'none';
+        }
+        
         winOverlay.classList.add('show');
     }
 
@@ -476,27 +553,62 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Controls
-    newGameBtn.addEventListener('click', initGame);
+    newGameBtn.addEventListener('click', () => {
+        // Instead of directly initing a game, we can optionally bring back the start screen
+        // or just re-init with current difficulty. The user asked for it to be like a menu, 
+        // so let's show the start screen again.
+        stopTimer();
+        startOverlay.classList.add('show');
+    });
 
     playAgainBtn.addEventListener('click', () => {
         winOverlay.classList.remove('show');
-        initGame();
+        startOverlay.classList.add('show');
     });
 
-    restartBtn.addEventListener('click', () => {
-        gameOverOverlay.classList.remove('show');
-        initGame();
-    });
+    if (typeof restartBtn !== 'undefined' && restartBtn) {
+        restartBtn.addEventListener('click', () => {
+            if (gameOverOverlay) gameOverOverlay.classList.remove('show');
+            startOverlay.classList.add('show');
+        });
+    }
 
     diffBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
             diffBtns.forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            currentDifficulty = e.target.dataset.diff;
-            initGame();
+            startDiffBtns.forEach(b => b.classList.remove('active')); // Sync
+            
+            const diff = e.target.dataset.diff;
+            // set active on the header and the start overlay
+            document.querySelectorAll(`[data-diff="${diff}"]`).forEach(b => b.classList.add('active'));
+            
+            currentDifficulty = diff;
+            // Optionally, we don't restart game right away when clicked in header 
+            // but just to stay consistent with original logic:
+            if (!startOverlay.classList.contains('show')) {
+                 initGame();
+            }
         });
     });
 
-    // Start
-    initGame();
+    startDiffBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            startDiffBtns.forEach(b => b.classList.remove('active'));
+            diffBtns.forEach(b => b.classList.remove('active')); // Sync
+
+            const diff = e.target.dataset.diff;
+            document.querySelectorAll(`[data-diff="${diff}"]`).forEach(b => b.classList.add('active'));
+
+            currentDifficulty = diff;
+        });
+    });
+
+    startGameBtn.addEventListener('click', () => {
+        startOverlay.classList.remove('show');
+        initGame();
+    });
+
+    // We don't call initGame() on start anymore. Wait for Start Game button.
+    // Sync the initial difficulty displaying in start modal:
+    updateBestTimeDisplay();
 });
