@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const diffBtns = document.querySelectorAll('.diff-btn');
     const winOverlay = document.getElementById('win-overlay');
     const playAgainBtn = document.getElementById('play-again-btn');
+    const mistakeCountEl = document.getElementById('mistake-count');
     // For timer functionality, note: The base code didn't declare mistakeCountEl properly in the first file block so I'll trust it exists if not shown.
-    // However, I need to fetch the newly added elements:
     const startOverlay = document.getElementById('start-overlay');
     const startGameBtn = document.getElementById('start-game-btn');
     const startDiffBtns = document.querySelectorAll('.start-diff-btn');
@@ -17,6 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const bestTimeDisplay = document.getElementById('best-time');
     const finalTimeDisplay = document.getElementById('final-time-display');
     const newBestTimeMsg = document.getElementById('new-best-time-msg');
+
+    // New Game Over Overlay elements
+    const gameOverOverlay = document.getElementById('game-over-overlay');
+    const continueBtn = document.getElementById('continue-btn');
+    const restartBtn = document.getElementById('restart-btn');
 
     let selectedCell = null;
     let cellElements = [];
@@ -87,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         notesMode = false;
         updateStatusUI();
         if (typeof notesBtn !== 'undefined' && notesBtn) {
-            notesBtn.innerText = 'Notes: Off';
+            notesBtn.innerText = 'メモ: オフ';
             notesBtn.classList.remove('active');
         }
         notes = Array(9).fill().map(() => Array(9).fill().map(() => new Set()));
@@ -107,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof mistakeCountEl !== 'undefined' && mistakeCountEl) {
             mistakeCountEl.innerText = `${mistakes}/3`;
         }
-        hintBtn.innerText = `Hint (${hints})`;
+        hintBtn.innerText = `ヒント (${hints})`;
         if (hints <= 0) {
             hintBtn.classList.add('disabled');
         } else {
@@ -478,10 +483,10 @@ document.addEventListener('DOMContentLoaded', () => {
             notesMode = !notesMode;
             if (notesMode) {
                 notesBtn.classList.add('active');
-                notesBtn.innerText = 'Notes: On';
+                notesBtn.innerText = 'メモ: オン';
             } else {
                 notesBtn.classList.remove('active');
-                notesBtn.innerText = 'Notes: Off';
+                notesBtn.innerText = 'メモ: オフ';
             }
         });
     }
@@ -497,7 +502,7 @@ document.addEventListener('DOMContentLoaded', () => {
         notesMode = false; // temporarily force disable notes to input the hint
         if (typeof notesBtn !== 'undefined' && notesBtn) {
             notesBtn.classList.remove('active');
-            notesBtn.innerText = 'Notes: Off';
+            notesBtn.innerText = 'メモ: オフ';
         }
 
         handleInput(correctVal);
@@ -507,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showWin() {
         stopTimer();
-        finalTimeDisplay.innerText = `Time: ${formatTime(secondsElapsed)}`;
+        finalTimeDisplay.innerText = `タイム: ${formatTime(secondsElapsed)}`;
 
         const isNewBest = saveBestTime(currentDifficulty, secondsElapsed);
         if (isNewBest) {
@@ -555,9 +560,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Controls
     newGameBtn.addEventListener('click', () => {
-        // Instead of directly initing a game, we can optionally bring back the start screen
-        // or just re-init with current difficulty. The user asked for it to be like a menu, 
-        // so let's show the start screen again.
         stopTimer();
         startOverlay.classList.add('show');
     });
@@ -571,6 +573,19 @@ document.addEventListener('DOMContentLoaded', () => {
         restartBtn.addEventListener('click', () => {
             if (gameOverOverlay) gameOverOverlay.classList.remove('show');
             startOverlay.classList.add('show');
+        });
+    }
+
+    if (typeof continueBtn !== 'undefined' && continueBtn) {
+        continueBtn.addEventListener('click', () => {
+            if (gameOverOverlay) gameOverOverlay.classList.remove('show');
+            // Resume the timer if it wasn't already running under another block
+            startTimer();
+            // We need to restore the seconds back to `secondsElapsed - 1` because 
+            // `startTimer` resets to 0. Let's fix startTimer or just set `secondsElapsed` manually.
+            const currentSeconds = secondsElapsed;
+            startTimer();
+            secondsElapsed = currentSeconds;
         });
     }
 

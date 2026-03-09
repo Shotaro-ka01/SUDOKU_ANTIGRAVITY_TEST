@@ -1,38 +1,38 @@
 # Premium Sudoku
 
-A clean, modern, and fully playable web-based Sudoku application built with HTML, CSS (Glassmorphism design), and Vanilla JavaScript. 
+クリーンでモダンなデザインの完全無料Web数独（Sudoku）アプリケーションです。HTML、CSS（グラスモーフィズムデザイン）、そしてVanilla JavaScriptで構築されています。
 
 ![Sudoku UI Preview](https://via.placeholder.com/800x400.png?text=Premium+Sudoku)
 
-## ✨ Features
-- **Dynamic Puzzle Generation**: Generates unique Sudoku puzzles on every new game.
-- **Three Difficulties**: Choose between Easy, Medium, and Hard.
-- **Timer & Personal Best**: Tracks your active play time and saves your best times locally for each difficulty setting.
-- **Notes Mode**: Allows you to take notes inside empty cells to help deduce the correct answers.
-- **Mistake Tracking & Hints**: Highlights mistakes in real-time. Make 3 mistakes and it's game over! Use up to 3 hints if you get stuck.
-- **Responsive Layout**: Designed to look great on desktop and mobile devices. A scrollable numpad ensures usability on extremely narrow screens.
-- **Modern UI**: Smooth animations, dark mode aesthetic, and glassmorphic UI elements.
+## ✨ 主な機能
+- **自動パズル生成**: 新しいゲームを始めるたびにユニークな数独パズルを生成します。
+- **3つの難易度**: 初級（Easy）、中級（Medium）、上級（Hard）から選べます。
+- **タイマー＆ベストタイム**: プレイ時間を計測し、難易度ごとの最短クリアタイムを自動でローカルに保存します。
+- **メモ機能**: 空白のマスに候補の数字をメモとして書き残すことができます。
+- **ミストラッキング＆ヒント**: 間違った数字を入力するとリアルタイムでハイライト表示されます。3回ミスをするとゲームオーバー画面になりますが、続けてプレイすることも可能です。どうしても分からない時は最大3回までヒント機能が使えます。
+- **レスポンシブデザイン**: PCでもスマートフォンでも快適にプレイできるレイアウト。画面が狭い場合でも横スクロールの数字パッドで操作しやすくなっています。
+- **モダンUI**: 滑らかなアニメーション、落ち着いた配色、背景に溶け込むグラスモーフィズムUIを採用しています。
 
-## 🚀 Quick Start
-No complex setup or build process is required! 
-1. Clone the repository:
+## 🚀 クイックスタート
+複雑な環境構築は不要ですぐに遊べます！
+1. リポジトリをクローンします:
    ```bash
    git clone https://github.com/yourusername/premium-sudoku.git
    ```
-2. Open `index.html` directly in your favorite modern browser.
-3. Select a difficulty and enjoy!
+2. お好みのモダンブラウザで `index.html` を直接開きます。
+3. 難易度を選択してゲームスタート！
 
-## 🛠️ Built With
-- **HTML5** (Structure)
-- **CSS3** (Styling, Animations, Grid/Flexbox)
-- **JavaScript** (Core Game Logic, DOM manipulation, LocalStorage)
+## 🛠️ 使用技術
+- **HTML5** (構成)
+- **CSS3** (スタイリング、アニメーション、Grid/Flexboxレイアウト)
+- **JavaScript** (コアゲームロジック、DOM操作、LocalStorage)
 
-## 🎮 How to Play
-1. **Goal**: Fill the 9x9 grid so that every row, every column, and every 3x3 block contains the digits 1 through 9.
-2. **Selecting a cell**: Click any empty cell to select it. The corresponding row, column, and block will highlight.
-3. **Placing a number**: Click the numbers (1-9) at the bottom or use your keyboard to input a number.
-4. **Notes**: Toggle "Notes: On" to jot down possible numbers rather than placing a final answer. 
-5. **Winning**: Successfully fill all cells with the correct numbers. Your final time will be recorded.
+## 🎮 遊び方
+1. **目的**: 9x9のマス目に、どの行・列・3x3のブロックにも1から9までの数字が1つずつ入るように空白を埋めます。
+2. **マスの選択**: 空白のマスをクリックして選択します。関連する行、列、ブロックが自動でハイライトされます。
+3. **数字の入力**: 画面下部の数字ボタン（1〜9）、またはキーボードを押して数字を入力します。
+4. **メモ**: 「メモ: オン」に切り替えると、確定させずに候補の数字を書き留めることができます。
+5. **クリア**: すべてのマスを正しい数字で埋めるとクリア画面が表示され、タイムが記録されます。
 
-## 📄 License
-This project is open-source and available under the MIT License.
+## 📄 ライセンス
+このプロジェクトはオープンソースであり、MIT Licenseの下で公開されています。

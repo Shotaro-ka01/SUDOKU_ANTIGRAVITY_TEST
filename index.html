@@ -14,12 +14,16 @@
         <header>
             <h1>SUDOKU</h1>
             <div class="timer-container"
-                style="display: flex; gap: 20px; font-size: 1.2rem; margin-bottom: 10px; color: var(--text-given);">
-                <div class="time">Time: <span id="timer">00:00</span></div>
-                <div class="best-time">Best: <span id="best-time">--:--</span></div>
+                style="display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; margin-bottom: 15px; color: var(--text-given); width: 100%;">
+                <div style="display: flex; gap: 20px;">
+                    <div class="time">タイム: <span id="timer">00:00</span></div>
+                    <div class="best-time">ベスト: <span id="best-time">--:--</span></div>
+                </div>
+                <div class="mistakes" style="color: var(--text-error); font-weight: 600;">ミス: <span
+                        id="mistake-count">0/3</span></div>
             </div>
             <div class="controls" style="justify-content: center;">
-                <button id="new-game-btn" class="primary-btn">Restart Game</button>
+                <button id="new-game-btn" class="primary-btn">やり直す</button>
             </div>
         </header>
 
@@ -42,9 +46,9 @@
                     <button class="num-btn" data-val="9">9</button>
                 </div>
                 <div class="actions-row">
-                    <button class="action-btn" id="notes-btn">Notes: Off</button>
-                    <button class="action-btn" id="erase-btn">Erase</button>
-                    <button class="action-btn" id="hint-btn">Hint</button>
+                    <button class="action-btn" id="notes-btn">メモ: オフ</button>
+                    <button class="action-btn" id="erase-btn">消す</button>
+                    <button class="action-btn" id="hint-btn">ヒント</button>
                 </div>
             </div>
         </main>
@@ -53,26 +57,38 @@
     <!-- Start Overlay -->
     <div class="overlay show" id="start-overlay">
         <div class="win-modal" style="display: flex; flex-direction: column; gap: 20px;">
-            <h2>Choose Difficulty</h2>
+            <h2>難易度を選択</h2>
             <div class="start-diff-selector"
                 style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
-                <button class="diff-btn start-diff-btn active" data-diff="easy">Easy</button>
-                <button class="diff-btn start-diff-btn" data-diff="medium">Medium</button>
-                <button class="diff-btn start-diff-btn" data-diff="hard">Hard</button>
+                <button class="diff-btn start-diff-btn active" data-diff="easy">初級</button>
+                <button class="diff-btn start-diff-btn" data-diff="medium">中級</button>
+                <button class="diff-btn start-diff-btn" data-diff="hard">上級</button>
             </div>
-            <button id="start-game-btn" class="primary-btn" style="font-size: 1.5rem; padding: 15px 30px;">Start
-                Game</button>
+            <button id="start-game-btn" class="primary-btn"
+                style="font-size: 1.5rem; padding: 15px 30px;">ゲーム開始</button>
         </div>
     </div>
 
     <div class="overlay" id="win-overlay">
         <div class="win-modal">
-            <h2>🎉 Congratulations! 🎉</h2>
-            <p>You solved the puzzle!</p>
+            <h2>🎉 クリア！ 🎉</h2>
             <p id="final-time-display" style="font-size: 1.5rem; font-weight: bold; margin-bottom: 15px;"></p>
             <p id="new-best-time-msg"
-                style="color: var(--accent); font-weight: bold; margin-bottom: 20px; display: none;">New Best Time!</p>
-            <button id="play-again-btn" class="primary-btn">Play Again</button>
+                style="color: var(--accent); font-weight: bold; margin-bottom: 20px; display: none;">ベストタイム更新！</p>
+            <button id="play-again-btn" class="primary-btn">もう一度遊ぶ</button>
+        </div>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div class="overlay" id="game-over-overlay">
+        <div class="win-modal" style="display: flex; flex-direction: column; gap: 20px;">
+            <h2 style="color: #ff4d4d; background: none; -webkit-text-fill-color: #ff4d4d;">ミスが3回に達しました</h2>
+            <p style="margin-bottom: 10px;">どうしますか？</p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button id="restart-btn" class="primary-btn"
+                    style="background: var(--glass-border); color: var(--text-primary);">最初からやり直す</button>
+                <button id="continue-btn" class="primary-btn">そのまま続ける</button>
+            </div>
         </div>
     </div>
 
