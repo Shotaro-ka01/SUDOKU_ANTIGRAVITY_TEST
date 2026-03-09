@@ -1,20 +1,22 @@
 :root {
-    --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --text-primary: #ffffff;
-    --text-secondary: #a0aec0;
-    --accent: #4fd1c5;
-    --cell-bg: rgba(255, 255, 255, 0.03);
-    --cell-hover: rgba(255, 255, 255, 0.1);
-    --cell-selected: rgba(79, 209, 197, 0.3);
-    --cell-highlight: rgba(79, 209, 197, 0.1);
-    --cell-error: rgba(220, 38, 38, 0.6);
-    --cell-same-val: rgba(79, 209, 197, 0.2);
-    --text-error: #ff4d4d;
-    --text-given: #e2e8f0;
-    --text-input: #4fd1c5;
-    --board-border: rgba(255, 255, 255, 0.2);
+    --bg-gradient: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --btn-border: #000000;
+    --btn-border-disabled: #a0aec0;
+    --text-primary: #1a202c;
+    --text-secondary: #4a5568;
+    --accent: #319795;
+    --cell-bg: #ffffff;
+    --cell-hover: #edf2f7;
+    --cell-selected: #c1dfdf;
+    --cell-highlight: #eaf4f4;
+    --cell-error: #fed7d7;
+    --cell-same-val: #d5eae9;
+    --text-error: #e53e3e;
+    --text-given: #1a202c;
+    --text-input: #319795;
+    --board-border: #000000;
 }
 
 * {
@@ -59,7 +61,7 @@ h1 {
     font-weight: 700;
     letter-spacing: 4px;
     margin-bottom: 20px;
-    background: linear-gradient(to right, #4fd1c5, #63b3ed);
+    background: linear-gradient(to right, #319795, #2b6cb0);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -93,14 +95,14 @@ h1 {
 }
 
 .diff-btn.active {
-    background: var(--glass-border);
-    color: var(--text-primary);
+    background: var(--text-primary);
+    color: var(--cell-bg);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .primary-btn {
-    background: var(--accent);
-    color: #000;
+    background: var(--text-primary);
+    color: #ffffff;
     border: none;
     padding: 10px 24px;
     border-radius: 12px;
@@ -185,6 +187,7 @@ h1 {
 .cell.error {
     background: var(--cell-error);
     color: var(--text-error);
+    font-weight: 700;
     animation: shake 0.4s ease-in-out;
 }
 
@@ -247,8 +250,8 @@ h1 {
 
 .num-btn,
 .action-btn {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
+    background: var(--cell-bg);
+    border: 2px solid var(--btn-border);
     color: var(--text-primary);
     border-radius: 12px;
     padding: 18px 0;
@@ -257,6 +260,15 @@ h1 {
     font-family: inherit;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+.num-btn:disabled,
+.action-btn.disabled {
+    border: 2px solid var(--btn-border-disabled);
+    color: var(--btn-border-disabled);
+    background: #f7fafc;
+    cursor: default;
+    transform: none !important;
 }
 
 .num-btn {
@@ -276,6 +288,12 @@ h1 {
 .num-btn:active,
 .action-btn:active {
     transform: translateY(1px);
+}
+
+.action-btn.active {
+    background: var(--text-primary);
+    color: var(--cell-bg);
+    border-color: var(--text-primary);
 }
 
 .actions-row {
@@ -352,7 +370,7 @@ h1 {
 .win-modal h2 {
     font-size: 2.5rem;
     margin-bottom: 20px;
-    background: linear-gradient(to right, #f6e05e, #ecc94b);
+    background: linear-gradient(to right, #d69e2e, #b7791f);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

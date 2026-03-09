@@ -359,6 +359,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleInput(val) {
         if (!selectedCell || selectedCell.classList.contains('given')) return;
 
+        // Prevent input if the number is already fully completed (9 times correctly)
+        const btn = Array.from(numBtns).find(b => parseInt(b.dataset.val) === val);
+        if (btn && btn.classList.contains('completed')) return;
+
         const r = parseInt(selectedCell.dataset.row);
         const c = parseInt(selectedCell.dataset.col);
 
@@ -458,8 +462,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const val = parseInt(btn.dataset.val);
             if (counts[val] === 9) {
                 btn.classList.add('completed');
+                btn.disabled = true;
             } else {
                 btn.classList.remove('completed');
+                btn.disabled = false;
             }
         });
     }
