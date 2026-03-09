@@ -19,7 +19,7 @@ No complex setup or build process is required!
    ```bash
    git clone https://github.com/yourusername/premium-sudoku.git
    ```
-2. Open `index_1.html` directly in your favorite modern browser.
+2. Open `index.html` directly in your favorite modern browser.
 3. Select a difficulty and enjoy!
 
 ## 🛠️ Built With
