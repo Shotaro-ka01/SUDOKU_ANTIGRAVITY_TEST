@@ -43,7 +43,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getBestTimes() {
         const data = localStorage.getItem(BEST_TIMES_KEY);
-        return data ? JSON.parse(data) : { easy: null, medium: null, hard: null, expert: null };
+        const defaults = { easy: null, medium: null, hard: null, expert: null };
+        if (data) {
+            return { ...defaults, ...JSON.parse(data) };
+        }
+        return defaults;
     }
 
     function saveBestTime(difficulty, timeInSeconds) {
