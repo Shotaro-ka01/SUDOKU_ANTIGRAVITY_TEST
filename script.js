@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getBestTimes() {
         const data = localStorage.getItem(BEST_TIMES_KEY);
-        return data ? JSON.parse(data) : { easy: null, medium: null, hard: null };
+        return data ? JSON.parse(data) : { easy: null, medium: null, hard: null, expert: null };
     }
 
     function saveBestTime(difficulty, timeInSeconds) {
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fillBoard(fullBoard);
 
         let puzzle = fullBoard.map(row => [...row]);
-        let cellsToRemove = difficulty === 'hard' ? 50 : (difficulty === 'medium' ? 40 : 30);
+        let cellsToRemove = difficulty === 'expert' ? 60 : (difficulty === 'hard' ? 50 : (difficulty === 'medium' ? 40 : 30));
 
         let cells = [];
         for (let r = 0; r < 9; r++) {
